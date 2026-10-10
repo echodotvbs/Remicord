@@ -66,7 +66,14 @@ export default definePlugin({
                     replace: "3", // VERIFIED_ADULT
                 }
             ],
-        }
+        },
+        {
+            find: "isNSFW(){",
+            replacement: {
+                match: /isNSFW\(\)\s*\{\i\s*\i\.\i\}/,
+                replace: "isNSFW(){return false}"
+            }
+        } // i wanted to make it to remove the age check thing but doesnt seem to find it sooo this is currently the way
     ],
 
     flux: {
