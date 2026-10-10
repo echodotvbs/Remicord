@@ -9,7 +9,7 @@ import { app, session } from "electron";
 
 import { SUPER_PROPERTIES_OVERRIDE } from "./shared";
 
-const PLUGIN_NAME = "IOSSuperPropertiesSpoof";
+const PLUGIN_NAME = "BetterNsfwBypass";
 const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/";
 
 const MESSAGES_URL_RE = /\/api\/v\d+\/channels\/\d+\/messages(\?|$)/;
