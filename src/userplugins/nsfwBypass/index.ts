@@ -7,21 +7,37 @@
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findByPropsLazy } from "@webpack";
 
 import { SUPER_PROPERTIES_OVERRIDE } from "./shared";
 
-const SuperProperties = findByPropsLazy("getSuperPropertiesBase64");
+const CHANNEL_RE = /\/api\/v\d+\/channels\/\d+(?:[/?]|$)/;
 
-function setWebSuperProperties(enabled: boolean) {
-    let value: string | null = null;
+let unhookWeb: (() => void) | undefined;
 
-    if (enabled) {
-        const original = JSON.parse(atob(SuperProperties.getSuperPropertiesBase64()));
-        value = btoa(JSON.stringify({ ...original, ...SUPER_PROPERTIES_OVERRIDE }));
-    }
+function hookWebSuperProperties() {
+    const { open, setRequestHeader } = XMLHttpRequest.prototype;
+    const urls = new WeakMap<XMLHttpRequest, string>();
 
-    window.postMessage({ type: "equicord:setSuperProperties", value });
+    XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, method: string, url: string | URL, ...rest: any[]) {
+        urls.set(this, String(url));
+        return (open as any).call(this, method, url, ...rest);
+    };
+
+    XMLHttpRequest.prototype.setRequestHeader = function (this: XMLHttpRequest, name: string, value: string) {
+        if (name.toLowerCase() === "x-super-properties" && CHANNEL_RE.test(urls.get(this) ?? "")) {
+            try {
+                value = btoa(JSON.stringify({ ...JSON.parse(atob(value)), ...SUPER_PROPERTIES_OVERRIDE }));
+            } catch {
+
+            }
+        }
+        return setRequestHeader.call(this, name, value);
+    };
+
+    unhookWeb = () => {
+        XMLHttpRequest.prototype.open = open;
+        XMLHttpRequest.prototype.setRequestHeader = setRequestHeader;
+    };
 }
 
 function fuckSensorship(m: any) {
@@ -47,10 +63,10 @@ export default definePlugin({
     authors: [{ name: "Mally", id: 1473303254287913122n }, Devs.Ven],
     tags: ["Appearance", "Media", "Customisation"],
     start() {
-        if (IS_WEB) setWebSuperProperties(true);
+        if (IS_WEB) hookWebSuperProperties();
     },
     stop() {
-        if (IS_WEB) setWebSuperProperties(false);
+        unhookWeb?.();
     },
     settings: settings,
     patches: [

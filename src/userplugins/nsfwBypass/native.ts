@@ -12,25 +12,25 @@ import { SUPER_PROPERTIES_OVERRIDE } from "./shared";
 const PLUGIN_NAME = "BetterNsfwBypass";
 const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/";
 
-const MESSAGES_URL_RE = /\/api\/v\d+\/channels\/\d+\/messages(\?|$)/;
+const CHANNEL_RE = /\/api\/v\d+\/channels\/(\d+)(?:[/?]|$)/;
 
 type Headers = Record<string, string>;
 
-function isPluginEnabled(name: string) {
-    return !!RendererSettings.store.plugins?.[name]?.enabled;
+function isPluginEnabled(name: string): boolean {
+    return RendererSettings.store.plugins?.[name]?.enabled === true;
 }
 
-function spoofSuperProperties(headers: Headers) {
+function spoofSuperProperties(headers: Headers): void {
     const key = Object.keys(headers).find(k => k.toLowerCase() === "x-super-properties") ?? "X-Super-Properties";
 
-    let original = {};
+    let original: Record<string, unknown> = {};
     try {
-        original = JSON.parse(Buffer.from(headers[key] ?? "", "base64").toString());
+        original = JSON.parse(Buffer.from(headers[key] ?? "", "base64").toString("utf8"));
     } catch {
 
     }
 
-    headers[key] = Buffer.from(JSON.stringify({ ...original, ...SUPER_PROPERTIES_OVERRIDE })).toString("base64");
+    headers[key] = Buffer.from(JSON.stringify({ ...original, ...SUPER_PROPERTIES_OVERRIDE }), "utf8").toString("base64");
 }
 
 app.whenReady().then(() => {
@@ -38,11 +38,12 @@ app.whenReady().then(() => {
         { urls: ["https://*.discord.com/api/*", `${YOUTUBE_EMBED_URL}*`] },
         ({ url, method, resourceType, requestHeaders }, callback) => {
             const isYoutubeEmbed = resourceType === "subFrame" && url.startsWith(YOUTUBE_EMBED_URL);
-            const isMessageFetch = method === "GET" && MESSAGES_URL_RE.test(url);
+            const isMessageFetch = CHANNEL_RE.test(url);
 
             if (isYoutubeEmbed && isPluginEnabled("FixYoutubeEmbeds")) {
                 requestHeaders.Referer = "https://media.discordapp.com/";
             } else if (isMessageFetch && isPluginEnabled(PLUGIN_NAME)) {
+                console.log("[BetterNsfwBypass] spoofing", method, url);
                 spoofSuperProperties(requestHeaders);
             }
 
