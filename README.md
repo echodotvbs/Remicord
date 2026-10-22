@@ -1,6 +1,6 @@
 [installation guide](./installation.md) 
 
-hi i love Remielle very much
+hi i love Remielle
 
 just a clone for my equicord userplugins
 
