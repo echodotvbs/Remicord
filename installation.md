@@ -38,6 +38,7 @@ Then i think thats it
 
 ### hi echo here.
 #### no mally thats not it
+(ONLY RUN THE NEXT COMMAND IF THIS IS THE FIRST INSTALLATION)
 
 After that please run: 
 ```powershell
