@@ -40,16 +40,6 @@ function hookWebSuperProperties() {
     };
 }
 
-function fuckSensorship(m: any) {
-    if (settings.store.showAttachment) {
-        for (const a of m?.attachments ?? []) {
-            delete a.content_scan_version;
-            a.flags &= ~16;
-        }
-        for (const s of m?.message_snapshots ?? []) fuckSensorship(s.message);
-    }
-}
-
 const settings = definePluginSettings({
     showAttachment: {
         type: OptionType.BOOLEAN,
@@ -71,6 +61,16 @@ export default definePlugin({
     settings: settings,
     patches: [
         {
+            find: "}function y(e,t){var n,i,r,a,l,o,d",
+            replacement: [
+                {
+                    // R: blur reasons list (attachments + embeds)
+                    match: /function (\i)\(e,t\)\{if\(t===\i\.LO\.NONE\)return\[\];/,
+                    replace: (_: string, name: string) => `function ${name}(e,t){return[];`
+                }
+            ]
+        },
+        {
             find: ".nsfwAllowed=null",
             replacement: [
                 {
@@ -89,12 +89,6 @@ export default definePlugin({
                 match: /isNSFW\(\)\s*\{\i\s*\i\.\i\}/,
                 replace: "isNSFW(){return false}"
             }
-        } // i wanted to make it to remove the age check thing but doesnt seem to find it sooo this is currently the way
+        }, // i wanted to make it to remove the age check thing but doesnt seem to find it sooo this is currently the way
     ],
-
-    flux: {
-        MESSAGE_CREATE: ({ message }) => fuckSensorship(message),
-        MESSAGE_UPDATE: ({ message }) => fuckSensorship(message),
-        LOAD_MESSAGES_SUCCESS: ({ messages }) => messages.forEach(fuckSensorship),
-    }
 });
