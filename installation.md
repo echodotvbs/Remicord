@@ -5,20 +5,32 @@
 guide on how to install this fork
 
 # Requirements
-- [Nodejs](https://nodejs.org/en/)
+- [Git](https://git-scm.com/install/windows)
+- [Github.CLI](https://cli.github.com)
+- [NodeJs](https://nodejs.org/en/)
 - [pnpm](https://pnpm.io/)
-- Any Discord verision (including ptb stabel or canary)
+- Any Discord desktop app verision (including ptb stabel or canary)
 
 # Steps
 
-## 1. Nodejs & pnpm installation
+## 1. Git, GitHub.CLI, Nodejs & pnpm installation
+
+Get Git with winget in powershell:
+```powershell
+winget install -e --id Git.Git
+```
+Get GitHub.CLI with winget in powershell:
+```powershell
+winget install -e --id GitHub.cli
+```
+
 Get NodeJs with winget in powershell: 
 ```powershell
 winget install -e --id OpenJS.NodeJS
 ```
 Or navigate to https://nodejs.org/ to get node.
 
-In the same powershell window, install pnpm: 
+Get pnpm in powershell: 
 ```powershell
 irm https://get.pnpm.io/ps1 | iex
 ```
