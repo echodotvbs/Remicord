@@ -18,7 +18,7 @@ winget install -e --id OpenJS.NodeJS
 ```
 Or navigate to https://nodejs.org/ to get node.
 
-Same powershell windows, install pnpm: 
+In the same powershell window, install pnpm: 
 ```powershell
 irm https://get.pnpm.io/ps1 | iex
 ```
@@ -26,6 +26,7 @@ irm https://get.pnpm.io/ps1 | iex
 ## 2. Build from source
 
 ### hi its echo here. if you're a noob, follow these instructions.
+*(this creates a folder named "git_repos" in your default Documents folder, and clones the repo into it for it to live there)*
 
 In powershell, run one after the other to create your clone of the repository:
 ```powershell
