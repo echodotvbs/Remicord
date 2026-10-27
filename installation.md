@@ -6,7 +6,7 @@ guide on how to install this fork
 
 # Requirements
 - [Git](https://git-scm.com/install/windows)
-- [Github.CLI](https://cli.github.com)
+- [GitHub.CLI](https://cli.github.com)
 - [NodeJs](https://nodejs.org/en/)
 - [pnpm](https://pnpm.io/)
 - Any Discord desktop app verision (including ptb stabel or canary)
