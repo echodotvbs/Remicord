@@ -9,7 +9,7 @@ guide on how to install this fork
 - [GitHub.CLI](https://cli.github.com)
 - [NodeJs](https://nodejs.org/en/)
 - [pnpm](https://pnpm.io/)
-- Any Discord desktop app verision (including ptb stabel or canary)
+- [Discord](https://discord.com/download#) Any desktop app thats updated to the latest version (including ptb stabel or canary)
 
 ### if you're a noob, follow these instructions.
 
