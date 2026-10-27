@@ -1,6 +1,6 @@
 # Installation
 
-### hi big mally here
+### hi folks its echo
 
 guide on how to install this fork
 
@@ -10,6 +10,8 @@ guide on how to install this fork
 - [NodeJs](https://nodejs.org/en/)
 - [pnpm](https://pnpm.io/)
 - Any Discord desktop app verision (including ptb stabel or canary)
+
+### if you're a noob, follow these instructions.
 
 # Steps
 
@@ -35,8 +37,6 @@ irm https://get.pnpm.io/ps1 | iex
 ```
 
 ## 2. Build from source
-
-### hi its echo here. if you're a noob, follow these instructions.
 *(this creates a folder named "git_repos" in your default Documents folder, and clones the repo into it for it to live there)*
 
 In powershell, run one after the other to create your clone of the repository:
@@ -56,7 +56,7 @@ cd Remicord
 ```
 If the first one doesnt work;
 ```powershell
-cd %USERPROFILE%\Documents\git_repos\Remicord
+cd ~/Documents/git_repos/Remicord
 ```
 ### hi it big mally again
 
