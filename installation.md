@@ -11,7 +11,7 @@ guide on how to install this fork
 - [pnpm](https://pnpm.io/)
 - [Discord](https://discord.com/download#) Any desktop app thats updated to the latest version (including ptb stabel or canary)
 
-### if you're a noob, follow these instructions.
+### if you dont know what youre doing, follow these instructions.
 
 # Steps
 
@@ -50,6 +50,7 @@ cd ~/Documents/git_repos
 git clone https://github.com/echodotvbs/Remicord/
 ```
 
+
 Next, navigate to the cloned folder (within the same terminal):
 ```powershell
 cd Remicord
@@ -58,25 +59,24 @@ If the first one doesnt work;
 ```powershell
 cd ~/Documents/git_repos/Remicord
 ```
-### hi it big mally again
 
-After that install these userplugins into Discord:
+
+After that- install, build and inject the repo:
+*check for pnpm updates first:* 
+```powershell
+pnpm self-update
+```
+
+If already on the latest, or updated successfully, continue with:
 ```powershell
 pnpm install
 ```
 ```powershell
 pnpm build
 ```
-Then i think thats it
-
-
-### echo again.
-#### no big mally thats not it
-
-After that please run: 
 ```powershell
 pnpm inject
 ```
 and follow the onscreen instructions.
 
-THATS it i think. (if you cant follow these instructions, just give up)
+Thats it i think. (if you cant follow these instructions, just give up)
