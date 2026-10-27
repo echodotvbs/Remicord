@@ -28,7 +28,6 @@ Get NodeJs with winget in powershell:
 ```powershell
 winget install -e --id OpenJS.NodeJS
 ```
-Or navigate to https://nodejs.org/ to get node.
 
 Get pnpm in powershell: 
 ```powershell
