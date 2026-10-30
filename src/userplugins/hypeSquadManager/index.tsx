@@ -7,9 +7,11 @@
 
 import { ApplicationCommandInputType, ApplicationCommandOptionType, sendBotMessage } from "@api/Commands";
 import { definePluginSettings } from "@api/Settings";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
+import { Button } from "@components/Button";
+import { Text } from "@components/Text";
 import definePlugin, { OptionType } from "@utils/types";
-import { Button, RestAPI, Text, UserStore, useState } from "@webpack/common";
+import { RenderModalProps } from "@vencord/discord-types";
+import { Modal, openModal, RestAPI, UserStore, useState } from "@webpack/common";
 
 const ENDPOINT = "/hypesquad/online";
 
@@ -52,7 +54,7 @@ async function leaveHypeSquad(): Promise<Result> {
     }
 }
 
-function HypeSquadModal({ modalProps }: { modalProps: ModalProps; }) {
+function HypeSquadModal({ modalProps }: { modalProps: RenderModalProps; }) {
     const [current, setCurrent] = useState<number | null>(getCurrentHouseId());
     const [busy, setBusy] = useState(false);
     const [status, setStatus] = useState<Result | null>(null);
@@ -68,59 +70,54 @@ function HypeSquadModal({ modalProps }: { modalProps: ModalProps; }) {
     }
 
     return (
-        <ModalRoot {...modalProps} size={ModalSize.SMALL}>
-            <ModalHeader>
-                <Text variant="heading-lg/semibold" style={{ flexGrow: 1 }}>HypeSquad Manager</Text>
-                <ModalCloseButton onClick={modalProps.onClose} />
-            </ModalHeader>
-
-            <ModalContent>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "16px 0" }}>
-                    {HOUSES.map(house => (
-                        <div key={house.id} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <div
-                                style={{
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: "50%",
-                                    background: house.color,
-                                    flexShrink: 0
-                                }}
-                            />
-                            <Text variant="text-md/semibold" style={{ flexGrow: 1 }}>
-                                {house.name}{current === house.id ? " (current)" : ""}
-                            </Text>
-                            <Button
-                                size={Button.Sizes.SMALL}
-                                disabled={busy || current === house.id}
-                                onClick={() => perform(() => joinHouse(house.id), () => setCurrent(house.id))}
-                            >
-                                Join
-                            </Button>
-                        </div>
-                    ))}
-
-                    {status && (
-                        <Text
-                            variant="text-sm/normal"
-                            style={{ color: status.ok ? "var(--text-positive, #2dc770)" : "var(--text-danger, #f23f43)" }}
-                        >
-                            {status.message}
+        <Modal
+            {...modalProps}
+            size="sm"
+            title="HypeSquad Manager"
+            actions={[
+                {
+                    text: "Leave HypeSquad",
+                    variant: "critical-primary",
+                    disabled: busy,
+                    onClick: () => perform(leaveHypeSquad, () => setCurrent(null))
+                }
+            ]}
+        >
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "16px 0" }}>
+                {HOUSES.map(house => (
+                    <div key={house.id} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div
+                            style={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: "50%",
+                                background: house.color,
+                                flexShrink: 0
+                            }}
+                        />
+                        <Text size="md" weight="semibold" style={{ flexGrow: 1 }}>
+                            {house.name}{current === house.id ? " (current)" : ""}
                         </Text>
-                    )}
-                </div>
-            </ModalContent>
+                        <Button
+                            size="small"
+                            disabled={busy || current === house.id}
+                            onClick={() => perform(() => joinHouse(house.id), () => setCurrent(house.id))}
+                        >
+                            Join
+                        </Button>
+                    </div>
+                ))}
 
-            <ModalFooter>
-                <Button
-                    color={Button.Colors.RED}
-                    disabled={busy}
-                    onClick={() => perform(leaveHypeSquad, () => setCurrent(null))}
-                >
-                    Leave HypeSquad
-                </Button>
-            </ModalFooter>
-        </ModalRoot>
+                {status && (
+                    <Text
+                        size="sm"
+                        style={{ color: status.ok ? "var(--text-positive, #2dc770)" : "var(--text-danger, #f23f43)" }}
+                    >
+                        {status.message}
+                    </Text>
+                )}
+            </div>
+        </Modal>
     );
 }
 
@@ -131,7 +128,7 @@ function openHypeSquadModal() {
 function SettingsPanel() {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <Text variant="text-md/normal">
+            <Text size="md">
                 Join a HypeSquad house or leave HypeSquad without leaving Discord.
             </Text>
             <div>
