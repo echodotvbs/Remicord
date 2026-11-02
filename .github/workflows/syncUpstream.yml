@@ -1,0 +1,84 @@
+name: Sync Upstream
+on:
+    schedule:
+        - cron: "0 */6 * * *"
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    Sync:
+        if: github.repository == 'echodotvbs/Remicord'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.SYNC_TOKEN || github.token }}
+
+            - name: Merge Equicord
+              id: merge
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git fetch https://github.com/Equicord/Equicord.git main
+
+                  if git merge-base --is-ancestor FETCH_HEAD HEAD; then
+                      echo "Already up to date."
+                      exit 0
+                  fi
+
+                  if ! git merge FETCH_HEAD --no-edit; then
+                      if git diff --name-only --diff-filter=U | grep -qx package.json; then
+                          git show :1:package.json > /tmp/base.json
+                          git show :2:package.json > /tmp/ours.json
+                          git show :3:package.json > /tmp/theirs.json
+                          jq -s --indent 4 '
+                              .[0] as $base | .[1] as $ours | .[2]
+                              | reduce ("dependencies", "devDependencies") as $k (.;
+                                  .[$k] += ($ours[$k] // {} | with_entries(select(.key as $d | ($base[$k] // {}) | has($d) | not)))
+                              )
+                          ' /tmp/base.json /tmp/ours.json /tmp/theirs.json > package.json
+                          git add package.json
+                      fi
+
+                      git checkout --theirs pnpm-lock.yaml && git add pnpm-lock.yaml
+
+                      unresolved=$(git diff --name-only --diff-filter=U)
+                      if [ -n "$unresolved" ]; then
+                          echo "::error::Could not auto resolve: $unresolved"
+                          exit 1
+                      fi
+                  fi
+
+                  echo "merged=true" >> "$GITHUB_OUTPUT"
+
+            - name: Setup PNPM
+              if: steps.merge.outputs.merged
+              uses: pnpm/action-setup@v4
+
+            - name: Setup Node
+              if: steps.merge.outputs.merged
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+
+            - name: Install and build
+              if: steps.merge.outputs.merged
+              run: |
+                  pnpm install --no-frozen-lockfile
+                  pnpm build
+
+            - name: Commit and push
+              if: steps.merge.outputs.merged
+              run: |
+                  git add pnpm-lock.yaml
+                  if [ -f .git/MERGE_HEAD ]; then
+                      git commit --no-edit
+                  elif ! git diff --cached --quiet; then
+                      git commit -m "chore: update lockfile"
+                  fi
+                  git push
