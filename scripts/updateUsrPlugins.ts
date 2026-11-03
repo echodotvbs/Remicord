@@ -3,7 +3,6 @@ import { execSync } from "node:child_process";
 const sources = [
     { from: "Accentaro/gameSessionSpoofer/gameSessionSpoofer", to: "src/userplugins/gameSessionSpoofer" },
     { from: "LostMorality/cordmuffin/custom-creations/gameTimeSpoof", to: "src/userplugins/gameTimeSpoof" },
-    { from: "LostMorality/cordmuffin/custom-creations/streamTimeFarmer", to: "src/userplugins/streamTimeFarmer" },
 ];
 
 for (const { from, to } of sources) {

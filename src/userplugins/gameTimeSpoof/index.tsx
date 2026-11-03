@@ -7,7 +7,7 @@
 import "./styles.css";
 
 import { HeaderBarButton } from "@api/HeaderBar";
-import { definePluginSettings, Settings } from "@api/Settings";
+import { definePluginSettings } from "@api/Settings";
 import { Button } from "@components/Button";
 import { GameControllerIcon } from "@components/Icons";
 import { Link } from "@components/Link";
@@ -15,7 +15,7 @@ import { Paragraph } from "@components/Paragraph";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { RunningGame } from "@vencord/discord-types";
-import { FluxDispatcher, RestAPI, RunningGameStore, UserStore } from "@webpack/common";
+import { FluxDispatcher, RestAPI, RunningGameStore } from "@webpack/common";
 
 import { loadBadges, type PendingCredit, savedPending, type SeenBadges, type UpdateClock } from "./badges";
 import { analyticsBlocked } from "./conflicts";
@@ -211,22 +211,13 @@ interface GamesAction {
     __gameTimeSpoof?: boolean;
 }
 
-function shownByOtherPlugin(id: string) {
-    const session = Settings.plugins.GameSessionSpoofer;
-    if (session?.enabled && session.session?.game?.id === id) return true;
-
-    const farm = Settings.plugins.StreamTimeFarmer;
-    const userId = UserStore.getCurrentUser()?.id;
-    return !!farm?.enabled && !!userId && farm.profiles?.[userId]?.farmGame?.id === id;
-}
-
 function trackRealGames(games: RunningGame[]) {
     if (!trackRealPlay) return;
     const fakeIds = new Set(fakeGames.map(g => g.id));
     const livePids = new Set<number>();
 
     for (const game of games) {
-        if (!game.id || game.pid == null || isFakePid(game.pid) || fakeIds.has(game.id) || game.hidden || game.isLauncher || shownByOtherPlugin(game.id)) continue;
+        if (!game.id || game.pid == null || isFakePid(game.pid) || fakeIds.has(game.id) || game.hidden || game.isLauncher) continue;
         livePids.add(game.pid);
         if (realGames.has(game.pid)) continue;
         realGames.set(game.pid, {
