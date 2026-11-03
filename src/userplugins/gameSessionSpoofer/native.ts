@@ -6,6 +6,7 @@
 
 import { ChildProcess, spawn } from "child_process";
 import { IpcMainInvokeEvent } from "electron";
+import { join } from "path";
 
 export interface GameWindow {
     title: string;
@@ -45,6 +46,8 @@ $form.add_FormClosing({ param($s, $e) if ($e.CloseReason -eq "UserClosing") { $e
 [Windows.Forms.Application]::Run($form)
 `;
 
+const POWERSHELL = join(process.env.SystemRoot ?? "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
+
 let helperProcess: ChildProcess | null = null;
 
 function stopHelperProcess(): void {
@@ -57,12 +60,12 @@ function spawnHelper(window: GameWindow | null): ChildProcess {
     if (window == null) return spawn(process.env.ComSpec ?? "cmd.exe", ["/d", "/q", "/c", "pause"], { windowsHide: true, stdio: ["pipe", "ignore", "ignore"] });
 
     return spawn(
-        "powershell.exe",
+        POWERSHELL,
         ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand", Buffer.from(WINDOW_SCRIPT, "utf16le").toString("base64")],
         {
             windowsHide: true,
             stdio: "ignore",
-            env: { ...process.env, VC_GSS_TITLE: window.title, VC_GSS_IMAGE: window.imageUrl ?? "" }
+            env: { ...process.env, VC_GSS_TITLE: window.title, VC_GSS_IMAGE: window.imageUrl?.startsWith("https://") ? window.imageUrl : "" }
         }
     );
 }

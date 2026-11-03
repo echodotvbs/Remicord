@@ -26,6 +26,12 @@ export default definePlugin({
         });
     },
 
+    stop() {
+        const entries = SettingsPlugin.customEntries;
+        const index = entries.findIndex(entry => entry.key === "hypesquad_manager");
+        if (index !== -1) entries.splice(index, 1);
+    },
+
     commands: [
         {
             name: "hypesquad",

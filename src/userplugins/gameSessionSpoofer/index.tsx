@@ -287,7 +287,8 @@ function restartHelper(): void {
 }
 
 function applySession(next: Session): void {
-    if (session != null) finishCredit(session);
+    const previous = session;
+    if (previous != null) finishCredit(previous);
 
     const { game, endsAt } = next;
     const generation = ++sessionGeneration;
@@ -296,7 +297,7 @@ function applySession(next: Session): void {
     settings.store.session = null;
     clearTimeout(stopTimeout);
     stopTimeout = undefined;
-    setDebugGame(null);
+    if (previous != null) setDebugGame(null);
 
     if (Native == null) {
         logger.error("The native game session helper is unavailable; restart Discord after rebuilding");
@@ -339,9 +340,11 @@ function stopSession(): void {
 
     const finished = session;
     session = null;
-    setDebugGame(null);
 
-    if (finished != null) finishCredit(finished);
+    if (finished != null) {
+        setDebugGame(null);
+        finishCredit(finished);
+    }
 }
 
 function stopAll(): void {

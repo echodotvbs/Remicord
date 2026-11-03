@@ -113,6 +113,23 @@
     background: var(--status-danger);
 }
 
+.vc-stf-presence-online {
+    background: var(--status-positive);
+}
+
+.vc-stf-presence-idle {
+    background: var(--status-warning);
+}
+
+.vc-stf-presence-dnd {
+    background: var(--status-danger);
+}
+
+.vc-stf-call-presence {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
 .vc-stf-call-who {
     flex: 1;
     min-width: 0;
@@ -259,4 +276,36 @@ body.vc-stf-afk-on > :not(.vc-stf-afk) {
     margin-top: 18px;
     font-size: 12px;
     color: #4a4a4a;
+}
+
+.vc-stf-login-warning {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vc-stf-stream-note {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.vc-stf-stream-games {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    color: var(--text-muted);
+}
+
+.vc-stf-stream-game {
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: var(--background-secondary, var(--background-base-lower));
+    color: var(--text-default, var(--text-normal));
+}
+
+.vc-stf-stream-game:hover {
+    background: var(--background-modifier-hover);
 }
