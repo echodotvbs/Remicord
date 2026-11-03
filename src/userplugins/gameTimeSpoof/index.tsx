@@ -87,6 +87,12 @@ export const settings = definePluginSettings({
         type: OptionType.CUSTOM,
         default: null as SeenBadges | null,
         description: ""
+    },
+    reportRealGames: {
+        type: OptionType.BOOLEAN,
+        description: "While Discord's analytics are blocked (by NoTrack or similar), Discord stops counting the games you really play. This reports them itself so their time still counts. Turn it off to send nothing for real games.",
+        default: true,
+        onChange: () => updateRealTracking()
     }
 });
 
@@ -362,6 +368,15 @@ function restart() {
     apply();
 }
 
+// Real games are only reported while Discord's own analytics are blocked, and only if the user wants it.
+function updateRealTracking() {
+    const on = active && analyticsBlocked && settings.store.reportRealGames;
+    if (on === trackRealPlay) return;
+    trackRealPlay = on;
+    if (on) trackRealGames(RunningGameStore.getRunningGames());
+    else realGames.clear();
+}
+
 export default definePlugin({
     name: "GameTimeSpoof",
     description: "Makes Discord think detectable PC games are running so your Game Time badge hours keep counting.",
@@ -386,11 +401,10 @@ export default definePlugin({
     start() {
         active = true;
         if (settings.store.pending.length) settings.store.pending = savedPending();
-        trackRealPlay = analyticsBlocked;
         lastTick = Date.now();
         appliedKey = parseGames(settings.store.games).join(",").toLowerCase();
         FluxDispatcher.addInterceptor(interceptor);
-        trackRealGames(RunningGameStore.getRunningGames());
+        updateRealTracking();
         apply();
         updateRotation(false);
         reportTimer = setInterval(tick, REPORT_INTERVAL);
@@ -409,6 +423,7 @@ export default definePlugin({
         if (index !== -1) FluxDispatcher._interceptors.splice(index, 1);
         reportElapsed([...realGames.values()]);
         realGames.clear();
+        trackRealPlay = false;
         clear();
         appliedKey = "";
     }
