@@ -61,34 +61,32 @@ export default definePlugin({
     settings: settings,
     patches: [
         {
-            find: "}function y(e,t){var n,i,r,a,l,o,d",
+            find: ".obscureReason)}",
             replacement: [
                 {
-                    // R: blur reasons list (attachments + embeds)
-                    match: /function (\i)\(e,t\)\{if\(t===\i\.LO\.NONE\)return\[\];/,
-                    replace: (_: string, name: string) => `function ${name}(e,t){return[];`
+                    // blur reasons list (attachments + embeds)
+                    match: /(function \i\(\i,\i\)\{)if\(\i===\i\.\i\.NONE\)return\[\];(?=let \i=\i\(\i\);return 0===)/,
+                    replace: "$1return[];"
+                },
+                {
+                    // pending-scan redaction check
+                    match: /\i===\i\.\i\.NONE\|\|(?=\i\.\i\.get\("explicit_media_redaction_ignore_pending_scan"\))/,
+                    replace: "true||"
                 }
             ]
         },
         {
-            find: ".nsfwAllowed=null",
+            find: "this.nsfwAllowed=",
             replacement: [
                 {
-                    match: /(?<=\.nsfwAllowed=)null!=.+?(?=[,;])/,
+                    match: /(?<=this\.nsfwAllowed=)\i\.nsfw_allowed\?\?\i\.nsfwAllowed/,
                     replace: "true",
                 },
                 {
-                    match: /(?<=\.ageVerificationStatus=)null!=.+?(?=[,;])/,
+                    match: /(?<=this\.ageVerificationStatus=)\i\.age_verification_status\?\?\i\.ageVerificationStatus/,
                     replace: "3", // VERIFIED_ADULT
                 }
             ],
-        },
-        {
-            find: "isNSFW(){",
-            replacement: {
-                match: /isNSFW\(\)\s*\{\i\s*\i\.\i\}/,
-                replace: "isNSFW(){return false}"
-            }
-        }, // i wanted to make it to remove the age check thing but doesnt seem to find it sooo this is currently the way
+        }
     ],
 });
