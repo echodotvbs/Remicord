@@ -17,7 +17,6 @@ jobs:
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-                  token: ${{ secrets.SYNC_TOKEN || github.token }}
 
             - name: Merge Equicord
               id: merge
@@ -31,7 +30,7 @@ jobs:
                       exit 0
                   fi
 
-                  if ! git merge FETCH_HEAD --no-edit; then
+                  if ! git merge FETCH_HEAD --no-commit --no-ff; then
                       if git diff --name-only --diff-filter=U | grep -qx package.json; then
                           git show :1:package.json > /tmp/base.json
                           git show :2:package.json > /tmp/ours.json
@@ -46,12 +45,15 @@ jobs:
                       fi
 
                       git checkout --theirs pnpm-lock.yaml && git add pnpm-lock.yaml
+                  fi
 
-                      unresolved=$(git diff --name-only --diff-filter=U)
-                      if [ -n "$unresolved" ]; then
-                          echo "::error::Could not auto resolve: $unresolved"
-                          exit 1
-                      fi
+                  git diff --cached --name-only --diff-filter=A HEAD -- .github/workflows | xargs -r git rm -qf
+                  git checkout HEAD -- .github/workflows
+
+                  unresolved=$(git diff --name-only --diff-filter=U)
+                  if [ -n "$unresolved" ]; then
+                      echo "::error::Could not auto resolve: $unresolved"
+                      exit 1
                   fi
 
                   echo "merged=true" >> "$GITHUB_OUTPUT"
