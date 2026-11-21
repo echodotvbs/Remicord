@@ -51,6 +51,7 @@
         "@vap/core": "catalog:",
         "@vap/shiki": "catalog:",
         "@vencord/monaco-editor": "catalog:",
+        "degit": "^3.10.0",
         "fflate": "catalog:",
         "gifenc": "catalog:",
         "gifuct-js": "catalog:",
@@ -58,9 +59,8 @@
         "jsqr": "catalog:",
         "nanoid": "catalog:",
         "native-file-system-adapter": "catalog:",
-        "yaml-js": "catalog:",
-        "degit": "^3.10.0",
-        "virtual-merge": "^1.0.1"
+        "virtual-merge": "^1.0.1",
+        "yaml-js": "catalog:"
     },
     "devDependencies": {
         "@electron/asar": "catalog:",
@@ -97,5 +97,5 @@
     "engines": {
         "node": ">=22"
     },
-    "packageManager": "pnpm@12.18.0"
+    "packageManager": "pnpm@12.21.0"
 }
